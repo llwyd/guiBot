@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -27,10 +28,32 @@ int main( void )
 
 	XGetInputFocus( d, &c, &focusState );
 
+	
 	XTextProperty text;
 	int error;
 	char previous[100] = {0};
+	
+	Window w, x,*y;
+	int num;
+
+	c = DefaultRootWindow( d);
+
 	while(1){
+	if( XQueryTree( d, c, &w, &x, &y, &num) > 0)
+	{
+		printf("Found %d windows\n", num);
+		/* print names */
+		
+		for(int i=0; i < num; i++)
+		{
+			memset( &text, 0x00, sizeof(XTextProperty));
+			error = XGetWMName( d, y[i], &text);
+			if( error != 0 )
+			{
+				printf("%s\n", text.value);
+			}
+		}
+	}
 		memset( &text, 0x00, sizeof(XTextProperty));
 		XGetInputFocus( d, &c, &focusState );
 		error = XGetWMName( d, c, &text);
@@ -43,6 +66,7 @@ int main( void )
 			}
 			
 		}
+	sleep(4);
 	}
 
 	return 0;
