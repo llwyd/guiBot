@@ -14,7 +14,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-void Desktop_GetWindows( Display * d, Window * win )
+void Desktop_GetWindows( Display * d, Window * win, Window * out, int *activeWindows, int buffer_size )
 {
 	XTextProperty text;
 	int error;
@@ -40,14 +40,19 @@ void Desktop_GetWindows( Display * d, Window * win )
 			{
 				if( childNum == 16 )
 				{
-					windowsFound++;
 					for( int j=0; j < childNum;j++)
 					{
 						memset( &text, 0x00, sizeof(XTextProperty));
 						error = XGetWMName( d, c[j], &text);
 						if( error != 0 )
 						{
-							printf("[%d] %s\n", windowsFound, text.value);
+							if( windowsFound > (buffer_size - 1) )
+							{
+								break;
+							}
+							out[ windowsFound ] = c[j];
+							// printf("[%d] %s\n", windowsFound, text.value);
+							windowsFound++;
 						}
 					}
 				}
@@ -56,8 +61,23 @@ void Desktop_GetWindows( Display * d, Window * win )
 		XFree(childrenReturn);
 		XFree(c);
 
-		printf("\n%d Active Window(s) Found\n",windowsFound);
+		printf("%d Active Window(s) Found\n",windowsFound);
+		*activeWindows = windowsFound;
 	}
 }
 
-void Desktop_ListWindows( Window * win, int num );
+void Desktop_ListWindows( Display  * d, Window * win, int num )
+{
+	XTextProperty text;
+	int error;
+
+	for( int i =0; i < num; i++)
+	{
+		memset( &text, 0x00, sizeof(XTextProperty));
+		error = XGetWMName( d, win[i],&text);
+		if( error != 0 )
+		{
+			printf("[%d] %s\n", i, text.value);
+		}
+	}
+}

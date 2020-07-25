@@ -15,7 +15,7 @@
 
 #include "desktop.h"
 
-
+#define WINDOWS_LIST_SIZE ( 32U )
 
 int main( void )
 {
@@ -27,12 +27,18 @@ int main( void )
 	/* Current window we want to attach */
 	Window c;
 
+	/* buffer for number of windows to store and list */
+	Window win[ WINDOWS_LIST_SIZE ];
+	int activeWindows = 0;
+
 	/* Current focus state */
 	int focusState;
 
 	XGetInputFocus( d, &c, &focusState );
 	
-	Desktop_GetWindows( d, &c);
+	Desktop_GetWindows( d, &c, win, &activeWindows, WINDOWS_LIST_SIZE);
+
+	Desktop_ListWindows( d, win, activeWindows );
 
 	return 0;
 }
