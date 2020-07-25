@@ -27,7 +27,6 @@ int main( void )
 	int focusState;
 
 	XGetInputFocus( d, &c, &focusState );
-
 	
 	XTextProperty text;
 	int error;
@@ -39,11 +38,35 @@ int main( void )
 	c = DefaultRootWindow( d);
 
 	while(1){
+	
 	if( XQueryTree( d, c, &w, &x, &y, &num) > 0)
 	{
 		printf("Found %d windows\n", num);
 		/* print names */
 		
+
+		Window a, b, *c;
+		int childNum;
+
+		for(int i = 0;i < num; i++)
+		{
+			if( XQueryTree(d, y[i], &a, &b, &c, &childNum))
+			{
+				printf("\tFound %d windows\n", childNum);
+				for( int j=0; j < childNum;j++)
+				{
+					
+			memset( &text, 0x00, sizeof(XTextProperty));
+			error = XGetWMName( d, c[j], &text);
+			if( error != 0 )
+			{
+				printf("\t\t%s\n", text.value);
+			}
+				}
+			}
+		}
+
+
 		for(int i=0; i < num; i++)
 		{
 			memset( &text, 0x00, sizeof(XTextProperty));
@@ -54,6 +77,7 @@ int main( void )
 			}
 		}
 	}
+		/*
 		memset( &text, 0x00, sizeof(XTextProperty));
 		XGetInputFocus( d, &c, &focusState );
 		error = XGetWMName( d, c, &text);
@@ -65,7 +89,7 @@ int main( void )
 				strcat(previous, text.value);
 			}
 			
-		}
+		}*/
 	sleep(4);
 	}
 
