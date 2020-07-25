@@ -18,14 +18,15 @@ void Desktop_GetWindows( Display * d, Window * win )
 {
 	XTextProperty text;
 	int error;
+	int windowsFound = 0;
 	
 	Window rootReturn, parentReturn, *childrenReturn;
 	int num;
 
 	/* start from the top */
-	win = DefaultRootWindow( d );
+	*win = DefaultRootWindow( d );
 	
-	if( XQueryTree( d, win, &rootReturn, &parentReturn, &childrenReturn, &num) > 0)
+	if( XQueryTree( d, *win, &rootReturn, &parentReturn, &childrenReturn, &num) > 0)
 	{
 		/* print names */
 		Window a, b, *c;
@@ -39,13 +40,14 @@ void Desktop_GetWindows( Display * d, Window * win )
 			{
 				if( childNum == 16 )
 				{
+					windowsFound++;
 					for( int j=0; j < childNum;j++)
 					{
 						memset( &text, 0x00, sizeof(XTextProperty));
 						error = XGetWMName( d, c[j], &text);
 						if( error != 0 )
 						{
-							printf("%s\n", text.value);
+							printf("[%d] %s\n", windowsFound, text.value);
 						}
 					}
 				}
@@ -53,6 +55,8 @@ void Desktop_GetWindows( Display * d, Window * win )
 		}
 		XFree(childrenReturn);
 		XFree(c);
+
+		printf("\n%d Active Window(s) Found\n",windowsFound);
 	}
 }
 

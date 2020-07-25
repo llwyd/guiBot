@@ -19,6 +19,8 @@
 
 int main( void )
 {
+	printf("\nguiBot automation engine\n\n");
+	
 	/* Initialise and open X11 display */
 	Display * d = XOpenDisplay( 0 );
 
