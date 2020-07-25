@@ -32,65 +32,40 @@ int main( void )
 	int error;
 	char previous[100] = {0};
 	
-	Window w, x,*y;
+	Window rootReturn, parentReturn, *childrenReturn;
 	int num;
 
+	/* start from the top */
 	c = DefaultRootWindow( d);
-
-	while(1){
 	
-	if( XQueryTree( d, c, &w, &x, &y, &num) > 0)
+	if( XQueryTree( d, c, &rootReturn, &parentReturn, &childrenReturn, &num) > 0)
 	{
-		printf("Found %d windows\n", num);
 		/* print names */
-		
-
 		Window a, b, *c;
 		int childNum;
 
+		/* Free unused pointers */
+
 		for(int i = 0;i < num; i++)
 		{
-			if( XQueryTree(d, y[i], &a, &b, &c, &childNum))
+			if( XQueryTree(d, childrenReturn[i], &a, &b, &c, &childNum))
 			{
-				printf("\tFound %d windows\n", childNum);
-				for( int j=0; j < childNum;j++)
+				if( childNum == 16 )
 				{
-					
-			memset( &text, 0x00, sizeof(XTextProperty));
-			error = XGetWMName( d, c[j], &text);
-			if( error != 0 )
-			{
-				printf("\t\t%s\n", text.value);
-			}
+					for( int j=0; j < childNum;j++)
+					{
+						memset( &text, 0x00, sizeof(XTextProperty));
+						error = XGetWMName( d, c[j], &text);
+						if( error != 0 )
+						{
+							printf("%s\n", text.value);
+						}
+					}
 				}
 			}
 		}
-
-
-		for(int i=0; i < num; i++)
-		{
-			memset( &text, 0x00, sizeof(XTextProperty));
-			error = XGetWMName( d, y[i], &text);
-			if( error != 0 )
-			{
-				printf("%s\n", text.value);
-			}
-		}
-	}
-		/*
-		memset( &text, 0x00, sizeof(XTextProperty));
-		XGetInputFocus( d, &c, &focusState );
-		error = XGetWMName( d, c, &text);
-		if( error!=0){
-			if( strcmp(text.value,previous) )
-			{
-				printf("%s\n", text.value);
-				memset(previous,0x00,100);
-				strcat(previous, text.value);
-			}
-			
-		}*/
-	sleep(4);
+		XFree(childrenReturn);
+		XFree(c);
 	}
 
 	return 0;
