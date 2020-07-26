@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
 
 #include "desktop.h"
 
@@ -39,6 +41,25 @@ int main( void )
 	Desktop_GetWindows( d, &c, win, &activeWindows, WINDOWS_LIST_SIZE);
 
 	Desktop_ListWindows( d, win, activeWindows );
+
+	printf("\n\nSelect a window: ");
+	int winIdx = 0;
+	scanf("%d", &winIdx);
+
+	/* assign current window */
+	c = win[winIdx];
+
+	XSelectInput( d, c, KeyPressMask | KeyReleaseMask );
+
+	int keypress = XKeysymToKeycode(d, XStringToKeysym("a"));
+
+	XTestFakeKeyEvent( d,keypress, True,0);
+	XFlush(d);
+	XTestFakeKeyEvent(d,keypress,False,0);
+	XTestFakeMotionEvent(d,0, 100,100,0);
+	XFlush(d);
+
+	XCloseDisplay( d );
 
 	return 0;
 }
