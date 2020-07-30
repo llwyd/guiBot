@@ -19,10 +19,18 @@
 
 #define WINDOWS_LIST_SIZE ( 32U )
 
+typedef enum
+{
+	state_findingWindow, /* finding the desired window */
+	state_autoWindow,	/* carrying out the automation routine */
+}state_t;
+
 int main( void )
 {
 	printf("\nguiBot automation engine\n\n");
 	
+	state_t currentState = state_findingWindow;
+
 	/* Initialise and open X11 display */
 	Display * d = XOpenDisplay( 0 );
 
@@ -62,8 +70,24 @@ int main( void )
 
 	while( 1 )
 	{
-		Desktop_IsFocused( d, &c );
-		usleep(100);
+		/* state finding window */
+		switch( currentState )
+		{
+			case state_findingWindow:
+				if( Desktop_IsFocused( d, &c ) )
+				{
+					currentState = state_autoWindow;
+				}
+				usleep(100);
+				break;
+			case state_autoWindow:	
+				if( !Desktop_IsFocused( d, &c ) )
+				{
+					currentState = state_findingWindow;
+				}
+				usleep(100);
+		}
+
 	}
 	XCloseDisplay( d );
 

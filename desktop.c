@@ -67,7 +67,7 @@ void Desktop_GetWindows( Display * d, Window * win, Window * out, int *activeWin
 	}
 }
 
-void Desktop_IsFocused( Display  * d, Window * selected )
+bool Desktop_IsFocused( Display  * d, Window * selected )
 {
 	static bool wasFocused = false;
 	XTextProperty currentText, selectedText;
@@ -97,7 +97,7 @@ void Desktop_IsFocused( Display  * d, Window * selected )
 			wasFocused = false;
 		}
 	}
-	
+	return wasFocused;
 }
 
 void Desktop_ListWindows( Display  * d, Window * win, int num )
