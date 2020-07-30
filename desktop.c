@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <stdbool.h>
 
 void Desktop_GetWindows( Display * d, Window * win, Window * out, int *activeWindows, int buffer_size )
 {
@@ -64,6 +65,39 @@ void Desktop_GetWindows( Display * d, Window * win, Window * out, int *activeWin
 		printf("%d Active Window(s) Found\n",windowsFound);
 		*activeWindows = windowsFound;
 	}
+}
+
+void Desktop_IsFocused( Display  * d, Window * selected )
+{
+	static bool wasFocused = false;
+	XTextProperty currentText, selectedText;
+	int error;
+	Window current;
+	/* Current focus state */
+	int focusState;
+
+	memset( &currentText, 0x00, sizeof(XTextProperty));
+	memset( &selectedText, 0x00, sizeof(XTextProperty));
+
+	XGetInputFocus( d, &current, &focusState);
+	
+	if( current == (*selected + 1))
+	{
+		if(!wasFocused)
+		{
+			printf("Window in focus!\n");
+			wasFocused = true;
+		}
+	}	
+	else
+	{
+		if(wasFocused)
+		{
+			printf("Window no longer focus!\n");
+			wasFocused = false;
+		}
+	}
+	
 }
 
 void Desktop_ListWindows( Display  * d, Window * win, int num )

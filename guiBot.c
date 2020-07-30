@@ -31,6 +31,7 @@ int main( void )
 
 	/* buffer for number of windows to store and list */
 	Window win[ WINDOWS_LIST_SIZE ];
+	memset(win, 0x00, sizeof(Window)*WINDOWS_LIST_SIZE);
 	int activeWindows = 0;
 
 	/* Current focus state */
@@ -59,6 +60,11 @@ int main( void )
 	XTestFakeMotionEvent(d,0, 100,100,0);
 	XFlush(d);
 
+	while( 1 )
+	{
+		Desktop_IsFocused( d, &c );
+		usleep(100);
+	}
 	XCloseDisplay( d );
 
 	return 0;
